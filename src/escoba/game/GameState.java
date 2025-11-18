@@ -1,8 +1,10 @@
 package escoba.game;
 
+import escoba.events.GameEvent;
 import escoba.model.Card;
 import escoba.model.Deck;
 import escoba.model.Player;
+import framework.observer.Observable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +13,7 @@ import java.util.List;
  * Manages the game state for Escoba de 15.
  * Handles deck, table, players, and game flow.
  */
-public class GameState {
+public class GameState extends Observable {
     private Deck deck;
     private List<Card> table;
     private Player player1;
@@ -49,6 +51,9 @@ public class GameState {
 
         // Deal 3 cards to each player
         dealCardsToPlayers();
+
+        // Notify observers that game has started
+        notifyObservers(GameEvent.GAME_STARTED);
     }
 
     public void dealCardsToPlayers() {
@@ -59,6 +64,9 @@ public class GameState {
             Card card2 = deck.draw();
             if (card2 != null) player2.addCardToHand(card2);
         }
+
+        // Notify observers that cards were dealt
+        notifyObservers(GameEvent.CARDS_DEALT);
     }
 
     public Player getCurrentPlayer() {
@@ -71,6 +79,9 @@ public class GameState {
 
     public void switchTurn() {
         currentPlayerNumber = currentPlayerNumber == 1 ? 2 : 1;
+
+        // Notify observers that turn has switched
+        notifyObservers(GameEvent.TURN_SWITCHED);
     }
 
     public List<Card> getTable() {
@@ -95,6 +106,11 @@ public class GameState {
 
     public void setGameOver(boolean gameOver) {
         this.gameOver = gameOver;
+
+        // Notify observers if game is over
+        if (gameOver) {
+            notifyObservers(GameEvent.GAME_OVER);
+        }
     }
 
     public int getDeckSize() {
@@ -107,13 +123,190 @@ public class GameState {
 
     public void addCardToTable(Card card) {
         table.add(card);
+
+        // Notify observers that table was updated
+        notifyObservers(GameEvent.TABLE_UPDATED);
     }
 
     public void removeCardsFromTable(List<Card> cards) {
         table.removeAll(cards);
+
+        // Notify observers that table was updated
+        notifyObservers(GameEvent.TABLE_UPDATED);
     }
 
     public boolean isTableEmpty() {
         return table.isEmpty();
+    }
+
+    /**
+     * Intenta jugar una carta en la mesa sin capturar.
+     *
+     * @param cardIndex Índice de la carta en la mano del jugador actual
+     * @return Resultado de la jugada con mensaje apropiado
+     */
+    public ResultadoJugada jugarCarta(int cardIndex) {
+        Player currentPlayer = getCurrentPlayer();
+
+        if (cardIndex < 0 || cardIndex >= currentPlayer.getHandSize()) {
+            return ResultadoJugada.error("Índice de carta inválido");
+        }
+
+        Card card = currentPlayer.removeCardFromHand(cardIndex);
+        String mensaje = "Pusiste " + card + " en la mesa";
+
+        addCardToTable(card);
+        notifyObservers(GameEvent.CARD_PLACED_ON_TABLE);
+
+        // Avanzar turno
+        boolean continua = nextTurn();
+
+        if (!continua) {
+            return ResultadoJugada.exitoFinJuego(mensaje);
+        }
+
+        return ResultadoJugada.exitoSimple(mensaje);
+    }
+
+    /**
+     * Intenta capturar cartas de la mesa.
+     *
+     * @param cardIndex Índice de la carta en la mano del jugador actual
+     * @param tableIndices Índices de las cartas de la mesa a capturar
+     * @return Resultado de la jugada con mensaje apropiado
+     */
+    public ResultadoJugada intentarCaptura(int cardIndex, List<Integer> tableIndices) {
+        Player currentPlayer = getCurrentPlayer();
+
+        // Validar índice de carta de mano
+        if (cardIndex < 0 || cardIndex >= currentPlayer.getHandSize()) {
+            return ResultadoJugada.error("Índice de carta inválido");
+        }
+
+        // Validar índices de mesa
+        for (int idx : tableIndices) {
+            if (idx < 0 || idx >= table.size()) {
+                return ResultadoJugada.error("¡Número de carta de mesa inválido! La mesa tiene " + table.size() + " cartas.");
+            }
+        }
+
+        Card playedCard = currentPlayer.getHand().get(cardIndex);
+        int sum = playedCard.getGameValue();
+        List<Card> toCapture = new ArrayList<>();
+
+        // Calcular suma
+        for (int idx : tableIndices) {
+            Card tableCard = table.get(idx);
+            sum += tableCard.getGameValue();
+            toCapture.add(tableCard);
+        }
+
+        // Validar que sume 15
+        if (sum != 15) {
+            return ResultadoJugada.error("¡Las cartas no suman 15! Tu suma = " + sum);
+        }
+
+        // Captura válida - ejecutar
+        currentPlayer.removeCardFromHand(cardIndex);
+        currentPlayer.addCapturedCard(playedCard);
+        currentPlayer.addCapturedCards(toCapture);
+        removeCardsFromTable(toCapture);
+
+        String mensaje = "¡Capturado! " + playedCard + " + " + toCapture + " = 15";
+
+        notifyObservers(GameEvent.CARDS_CAPTURED);
+
+        // Verificar escoba
+        boolean esEscoba = false;
+        if (isTableEmpty()) {
+            currentPlayer.incrementEscobas();
+            notifyObservers(GameEvent.ESCOBA_SCORED);
+            esEscoba = true;
+        }
+
+        // Avanzar turno
+        boolean continua = nextTurn();
+
+        if (!continua) {
+            return ResultadoJugada.exitoFinJuego(mensaje);
+        }
+
+        if (esEscoba) {
+            return ResultadoJugada.exitoConEscoba(mensaje);
+        }
+
+        return ResultadoJugada.exitoSimple(mensaje);
+    }
+
+    /**
+     * Avanza al siguiente turno, repartiendo cartas si es necesario o terminando el juego.
+     *
+     * @return true si el juego continúa, false si terminó
+     */
+    private boolean nextTurn() {
+        // Verificar si ambos jugadores necesitan cartas nuevas
+        if (!player1.hasCardsInHand() && !player2.hasCardsInHand()) {
+            if (isDeckEmpty()) {
+                finishGame();
+                return false;
+            } else {
+                dealCardsToPlayers();
+            }
+        }
+
+        switchTurn();
+        return true;
+    }
+
+    /**
+     * Termina el juego, dando las cartas restantes de la mesa al último jugador.
+     */
+    private void finishGame() {
+        setGameOver(true);
+
+        // El último jugador se lleva las cartas restantes de la mesa
+        if (!isTableEmpty()) {
+            Player currentPlayer = getCurrentPlayer();
+            currentPlayer.addCapturedCards(table);
+            table.clear();
+        }
+    }
+
+    /**
+     * Obtiene el resumen del fin del juego con todos los puntajes.
+     *
+     * @return Array de Strings con las líneas del resumen
+     */
+    public String[] obtenerResumenFinJuego() {
+        int score1 = ScoreCalculator.calculateScore(player1, player2);
+        int score2 = ScoreCalculator.calculateScore(player2, player1);
+
+        List<String> lineas = new ArrayList<>();
+
+        lineas.add("");
+        lineas.add("=================================");
+        lineas.add("        ¡FIN DEL JUEGO!");
+        lineas.add("=================================");
+        lineas.add("");
+        lineas.add(ScoreCalculator.getScoreBreakdown(player1, player2));
+        lineas.add("");
+        lineas.add(ScoreCalculator.getScoreBreakdown(player2, player1));
+        lineas.add("");
+        lineas.add("PUNTAJE FINAL:");
+        lineas.add("  " + player1.getName() + ": " + score1 + " puntos");
+        lineas.add("  " + player2.getName() + ": " + score2 + " puntos");
+        lineas.add("");
+
+        if (score1 > score2) {
+            lineas.add("*** ¡" + player1.getName().toUpperCase() + " GANA! ***");
+        } else if (score2 > score1) {
+            lineas.add("*** ¡" + player2.getName().toUpperCase() + " GANA! ***");
+        } else {
+            lineas.add("*** ¡EMPATE! ***");
+        }
+
+        lineas.add("=================================");
+
+        return lineas.toArray(new String[0]);
     }
 }

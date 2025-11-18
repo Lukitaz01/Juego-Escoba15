@@ -1,7 +1,10 @@
 package escoba.view;
 
+import escoba.events.GameEvent;
 import escoba.model.Card;
 import escoba.model.Player;
+import framework.observer.IObservable;
+import framework.observer.IObserver;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,6 +22,7 @@ import java.util.List;
  * - Mostrar el estado del juego (mesa, mano, puntajes)
  * - Capturar input del jugador
  * - Mostrar mensajes, errores y ayuda
+ * - Observar cambios en el GameState (Observer pattern)
  *
  * CÓMO MODIFICAR:
  * - Cambiar colores: modificar setBackground() y setForeground()
@@ -26,26 +30,29 @@ import java.util.List;
  * - Cambiar fuente: modificar Font()
  * - Cambiar textos: modificar los strings en displayGameState() y displayHelp()
  */
-public class PlayerView {
+public class PlayerView implements IObserver {
     // Componentes de la ventana
     private JFrame frame;           // La ventana principal
     private JTextArea textArea;     // Área de texto para mostrar el juego
     private JTextField inputField;  // Campo para escribir comandos
     private String playerName;      // Nombre del jugador
+    private int playerNumber;       // Número del jugador (1 o 2)
 
     /**
      * Constructor de la vista del jugador.
      *
      * @param playerName Nombre del jugador ("Jugador 1", "Jugador 2", etc.)
+     * @param playerNumber Número del jugador (1 o 2) para definir el esquema de colores
      * @param x Posición X de la ventana en la pantalla
      * @param y Posición Y de la ventana en la pantalla
      *
      * CÓMO USAR:
-     * PlayerView view = new PlayerView("Juan", 100, 100);
+     * PlayerView view = new PlayerView("Player 1", 1, 100, 100);
      * view.show();
      */
-    public PlayerView(String playerName, int x, int y) {
+    public PlayerView(String playerName, int playerNumber, int x, int y) {
         this.playerName = playerName;
+        this.playerNumber = playerNumber;
         createWindow(x, y);
     }
 
@@ -72,11 +79,27 @@ public class PlayerView {
         frame.setLocation(x, y);   // Posición en pantalla
         frame.setLayout(new BorderLayout());
 
+        // Definir colores según el jugador
+        // Player 1: Soft Blue (fondo oscuro azul, texto celeste claro)
+        // Player 2: Soft Green (fondo oscuro verde, texto verde claro)
+        Color backgroundColor;
+        Color foregroundColor;
+
+        if (playerNumber == 1) {
+            // Soft blue theme for Player 1
+            backgroundColor = new Color(15, 25, 45);      // Dark blue background
+            foregroundColor = new Color(173, 216, 230);   // Light blue text
+        } else {
+            // Soft green theme for Player 2
+            backgroundColor = new Color(15, 35, 25);      // Dark green background
+            foregroundColor = new Color(144, 238, 144);   // Light green text
+        }
+
         // Área de texto para mostrar el juego
         textArea = new JTextArea();
         textArea.setEditable(false);  // No se puede editar
-        textArea.setBackground(Color.BLACK);   // Fondo negro
-        textArea.setForeground(Color.GREEN);   // Texto verde
+        textArea.setBackground(backgroundColor);
+        textArea.setForeground(foregroundColor);
         textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
 
         // Panel de scroll para el área de texto
@@ -313,5 +336,47 @@ public class PlayerView {
         help.append("  - 1 punto por más 7s\n\n");
 
         appendText(help.toString());
+    }
+
+    /**
+     * Observer pattern update method.
+     * Called when the GameState (observable) changes.
+     *
+     * @param observable The GameState that changed
+     * @param event The event that occurred (GameEvent enum)
+     */
+    @Override
+    public void update(IObservable observable, Object event) {
+        if (event instanceof GameEvent) {
+            GameEvent gameEvent = (GameEvent) event;
+
+            // Handle different game events
+            switch (gameEvent) {
+                case GAME_STARTED:
+                    clearText();
+                    displayMessage("=== NUEVO JUEGO INICIADO ===\n");
+                    break;
+
+                case CARDS_DEALT:
+                    displayMessage("--- Nuevas cartas repartidas ---\n");
+                    break;
+
+                case TURN_SWITCHED:
+                    // View will be refreshed by controller
+                    break;
+
+                case TABLE_UPDATED:
+                    // View will be refreshed by controller
+                    break;
+
+                case GAME_OVER:
+                    displayMessage("\n=== EL JUEGO HA TERMINADO ===\n");
+                    break;
+
+                default:
+                    // Other events handled by controller directly
+                    break;
+            }
+        }
     }
 }

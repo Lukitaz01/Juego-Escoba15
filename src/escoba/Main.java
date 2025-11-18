@@ -18,29 +18,29 @@ public class Main {
             GameState gameState = new GameState();
 
             // Create views for both players
-            PlayerView view1 = new PlayerView("Player 1", 100, 100);
-            PlayerView view2 = new PlayerView("Player 2", 750, 100);
+            PlayerView view1 = new PlayerView("Player 1", 1, 100, 100);
+            PlayerView view2 = new PlayerView("Player 2", 2, 750, 100);
 
             // Create game controller
             GameController controller = new GameController(gameState, view1, view2);
 
-            // Set up input listeners
+            // Configurar listeners de input
             view1.setInputListener(e -> {
                 String input = view1.getInput();
                 view1.clearInput();
-                controller.processPlayerInput(1, input);
+                controller.procesarInputJugador(1, input);
             });
 
             view2.setInputListener(e -> {
                 String input = view2.getInput();
                 view2.clearInput();
-                controller.processPlayerInput(2, input);
+                controller.procesarInputJugador(2, input);
             });
 
-            // Show windows and start game
+            // Mostrar ventanas e iniciar juego
             view1.show();
             view2.show();
-            controller.startGame();
+            controller.iniciarJuego();
         });
     }
 }

@@ -18,11 +18,11 @@ package escoba.model;
  * - Para cambiar palos, modificar en la clase Deck
  */
 public class Card {
-    // Número interno de la carta (1-7, 10-12)
-    private int cardNumber;
 
-    // Palo de la carta (Oro, Copa, Espada, Basto)
-    private String suit;
+    private int cardNumber;// Número interno de la carta (1-7, 10-12)
+
+
+    private String suit;// Palo de la carta (Oro, Copa, Espada, Basto)
 
     /**
      * Constructor de la carta.

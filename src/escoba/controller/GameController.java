@@ -1,17 +1,23 @@
 package escoba.controller;
 
 import escoba.game.GameState;
-import escoba.game.ScoreCalculator;
-import escoba.model.Card;
-import escoba.model.Player;
+import escoba.game.ResultadoJugada;
 import escoba.view.PlayerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Controls the game flow and logic for Escoba de 15.
- * Handles player actions, validates moves, and updates views.
+ * Controlador para Escoba de 15.
+ *
+ * RESPONSABILIDAD ÚNICA: Coordinar entre Modelo y Vistas (barandilla).
+ *
+ * Este controlador NO contiene lógica de negocio.
+ * Solo:
+ * - Recibe input del usuario
+ * - Parsea comandos básicos
+ * - Delega TODO al Modelo
+ * - Muestra resultados en las Vistas
  */
 public class GameController {
     private GameState gameState;
@@ -22,20 +28,33 @@ public class GameController {
         this.gameState = gameState;
         this.view1 = view1;
         this.view2 = view2;
+
+        // Registrar vistas como observadores
+        gameState.addObserver(view1);
+        gameState.addObserver(view2);
     }
 
-    public void startGame() {
+    /**
+     * Inicia el juego.
+     */
+    public void iniciarJuego() {
         gameState.startNewGame();
-        updateBothViews();
+        actualizarAmbasVistas();
     }
 
-    public void processPlayerInput(int playerNumber, String input) {
+    /**
+     * Procesa el input del jugador.
+     * SOLO parsea comandos y delega al Modelo.
+     */
+    public void procesarInputJugador(int numeroJugador, String input) {
+        // Verificar si el juego terminó
         if (gameState.isGameOver()) {
             return;
         }
 
-        if (playerNumber != gameState.getCurrentPlayerNumber()) {
-            getView(playerNumber).displayError("¡No es tu turno!");
+        // Verificar turno
+        if (numeroJugador != gameState.getCurrentPlayerNumber()) {
+            obtenerVista(numeroJugador).displayError("¡No es tu turno!");
             return;
         }
 
@@ -45,193 +64,150 @@ public class GameController {
             return;
         }
 
+        // Comando: salir
         if (input.equals("salir") || input.equals("quit")) {
             System.exit(0);
             return;
         }
 
+        // Comando: ayuda
         if (input.equals("ayuda") || input.equals("help")) {
-            getView(playerNumber).displayHelp();
+            obtenerVista(numeroJugador).displayHelp();
+            actualizarVista(numeroJugador);
             return;
         }
 
+        // Comando: jugar
         if (input.startsWith("jugar ") || input.startsWith("play ")) {
-            handlePlayCommand(playerNumber, input);
+            manejarComandoJugar(numeroJugador, input);
         } else {
-            getView(playerNumber).displayError("Comando desconocido. Escribe 'ayuda' para ver instrucciones.");
+            obtenerVista(numeroJugador).displayError("Comando desconocido. Escribe 'ayuda' para ver instrucciones.");
         }
     }
 
-    private void handlePlayCommand(int playerNumber, String input) {
-        Player currentPlayer = gameState.getCurrentPlayer();
-        PlayerView currentView = getView(playerNumber);
+    /**
+     * Maneja el comando "jugar".
+     * SOLO parsea y delega al Modelo.
+     */
+    private void manejarComandoJugar(int numeroJugador, String input) {
+        PlayerView vista = obtenerVista(numeroJugador);
+        String[] partes = input.split(" ");
 
-        String[] parts = input.split(" ");
-
-        if (parts.length < 2) {
-            currentView.displayError("Uso: jugar <carta#> [llevar <mesa#> ...]");
+        if (partes.length < 2) {
+            vista.displayError("Uso: jugar <carta#> [llevar <mesa#> ...]");
             return;
         }
 
         try {
-            int cardIndex = Integer.parseInt(parts[1]) - 1;
+            int indiceCarta = Integer.parseInt(partes[1]) - 1;
 
-            if (cardIndex < 0 || cardIndex >= currentPlayer.getHandSize()) {
-                currentView.displayError("¡Número de carta inválido! Tienes " + currentPlayer.getHandSize() + " cartas.");
-                return;
-            }
-
-            // Check if capturing cards
-            if (parts.length > 2 && (parts[2].equals("llevar") || parts[2].equals("take"))) {
-                List<Integer> tableIndices = new ArrayList<>();
-                for (int i = 3; i < parts.length; i++) {
-                    tableIndices.add(Integer.parseInt(parts[i]) - 1);
+            // Verificar si hay captura
+            if (partes.length > 2 && (partes[2].equals("llevar") || partes[2].equals("take"))) {
+                // Parsear índices de mesa
+                List<Integer> indicesMesa = new ArrayList<>();
+                for (int i = 3; i < partes.length; i++) {
+                    indicesMesa.add(Integer.parseInt(partes[i]) - 1);
                 }
-                attemptCapture(playerNumber, cardIndex, tableIndices);
+                ejecutarCaptura(numeroJugador, indiceCarta, indicesMesa);
             } else {
-                // Just place card on table
-                placeCardOnTable(playerNumber, cardIndex);
+                // Solo colocar carta
+                ejecutarColocarCarta(numeroJugador, indiceCarta);
             }
 
         } catch (NumberFormatException e) {
-            currentView.displayError("¡Comando inválido! Usa: jugar <carta#> [llevar <mesa#> ...]");
+            vista.displayError("¡Comando inválido! Usa: jugar <carta#> [llevar <mesa#> ...]");
         }
     }
 
-    private void placeCardOnTable(int playerNumber, int cardIndex) {
-        Player currentPlayer = gameState.getCurrentPlayer();
-        PlayerView currentView = getView(playerNumber);
+    /**
+     * Ejecuta colocar carta - DELEGA al Modelo.
+     */
+    private void ejecutarColocarCarta(int numeroJugador, int indiceCarta) {
+        PlayerView vista = obtenerVista(numeroJugador);
 
-        Card card = currentPlayer.removeCardFromHand(cardIndex);
-        gameState.addCardToTable(card);
+        // Delegar al Modelo
+        ResultadoJugada resultado = gameState.jugarCarta(indiceCarta);
 
-        currentView.displayMessage("Pusiste " + card + " en la mesa");
-        nextTurn();
-    }
+        // Mostrar resultado
+        if (resultado.isExito()) {
+            vista.displayMessage(resultado.getMensaje());
 
-    private void attemptCapture(int playerNumber, int cardIndex, List<Integer> tableIndices) {
-        Player currentPlayer = gameState.getCurrentPlayer();
-        PlayerView currentView = getView(playerNumber);
-        List<Card> table = gameState.getTable();
-
-        Card playedCard = currentPlayer.getHand().get(cardIndex);
-        int sum = playedCard.getGameValue();
-        List<Card> toCapture = new ArrayList<>();
-
-        // Validate table indices and calculate sum
-        for (int idx : tableIndices) {
-            if (idx < 0 || idx >= table.size()) {
-                currentView.displayError("¡Número de carta de mesa inválido! La mesa tiene " + table.size() + " cartas.");
-                return;
-            }
-            Card tableCard = table.get(idx);
-            sum += tableCard.getGameValue();
-            toCapture.add(tableCard);
-        }
-
-        // Check if sum equals 15
-        if (sum != 15) {
-            currentView.displayError("¡Las cartas no suman 15! Tu suma = " + sum);
-            return;
-        }
-
-        // Valid capture!
-        currentPlayer.removeCardFromHand(cardIndex);
-        currentPlayer.addCapturedCard(playedCard);
-        currentPlayer.addCapturedCards(toCapture);
-        gameState.removeCardsFromTable(toCapture);
-
-        currentView.displayMessage("¡Capturado! " + playedCard + " + " + toCapture + " = 15");
-
-        // Check for escoba
-        if (gameState.isTableEmpty()) {
-            currentPlayer.incrementEscobas();
-            currentView.displayMessage("*** ¡ESCOBA! ***");
-        }
-
-        nextTurn();
-    }
-
-    private void nextTurn() {
-        // Check if both players need new cards
-        if (!gameState.getPlayer1().hasCardsInHand() && !gameState.getPlayer2().hasCardsInHand()) {
-            if (gameState.isDeckEmpty()) {
-                endGame();
-                return;
+            if (resultado.isJuegoTerminado()) {
+                mostrarFinJuego();
             } else {
-                gameState.dealCardsToPlayers();
-                view1.displayMessage("--- Nuevas cartas repartidas ---");
-                view2.displayMessage("--- Nuevas cartas repartidas ---");
+                actualizarAmbasVistas();
             }
-        }
-
-        gameState.switchTurn();
-        updateBothViews();
-    }
-
-    private void endGame() {
-        gameState.setGameOver(true);
-
-        // Last player takes remaining table cards
-        if (!gameState.isTableEmpty()) {
-            Player currentPlayer = gameState.getCurrentPlayer();
-            currentPlayer.addCapturedCards(gameState.getTable());
-            gameState.getTable().clear();
-        }
-
-        // Calculate scores
-        Player p1 = gameState.getPlayer1();
-        Player p2 = gameState.getPlayer2();
-        int score1 = ScoreCalculator.calculateScore(p1, p2);
-        int score2 = ScoreCalculator.calculateScore(p2, p1);
-
-        // Display results to both players
-        displayGameOver(view1, p1, p2, score1, score2);
-        displayGameOver(view2, p1, p2, score1, score2);
-    }
-
-    private void displayGameOver(PlayerView view, Player p1, Player p2, int score1, int score2) {
-        view.displayMessage("\n");
-        view.displayMessage("=================================");
-        view.displayMessage("        ¡FIN DEL JUEGO!");
-        view.displayMessage("=================================");
-        view.displayMessage("");
-        view.displayMessage(ScoreCalculator.getScoreBreakdown(p1, p2));
-        view.displayMessage("");
-        view.displayMessage(ScoreCalculator.getScoreBreakdown(p2, p1));
-        view.displayMessage("");
-        view.displayMessage("PUNTAJE FINAL:");
-        view.displayMessage("  " + p1.getName() + ": " + score1 + " puntos");
-        view.displayMessage("  " + p2.getName() + ": " + score2 + " puntos");
-        view.displayMessage("");
-
-        if (score1 > score2) {
-            view.displayMessage("*** ¡" + p1.getName().toUpperCase() + " GANA! ***");
-        } else if (score2 > score1) {
-            view.displayMessage("*** ¡" + p2.getName().toUpperCase() + " GANA! ***");
         } else {
-            view.displayMessage("*** ¡EMPATE! ***");
+            vista.displayError(resultado.getMensaje());
         }
-
-        view.displayMessage("=================================");
     }
 
-    private void updateBothViews() {
-        updatePlayerView(1);
-        updatePlayerView(2);
+    /**
+     * Ejecuta captura - DELEGA al Modelo.
+     */
+    private void ejecutarCaptura(int numeroJugador, int indiceCarta, List<Integer> indicesMesa) {
+        PlayerView vista = obtenerVista(numeroJugador);
+
+        // Delegar al Modelo
+        ResultadoJugada resultado = gameState.intentarCaptura(indiceCarta, indicesMesa);
+
+        // Mostrar resultado
+        if (resultado.isExito()) {
+            vista.displayMessage(resultado.getMensaje());
+
+            if (resultado.isEsEscoba()) {
+                vista.displayMessage("*** ¡ESCOBA! ***");
+            }
+
+            if (resultado.isJuegoTerminado()) {
+                mostrarFinJuego();
+            } else {
+                actualizarAmbasVistas();
+            }
+        } else {
+            vista.displayError(resultado.getMensaje());
+        }
     }
 
-    private void updatePlayerView(int playerNumber) {
-        PlayerView view = getView(playerNumber);
-        Player player = (playerNumber == 1) ? gameState.getPlayer1() : gameState.getPlayer2();
-        Player opponent = (playerNumber == 1) ? gameState.getPlayer2() : gameState.getPlayer1();
-        boolean isCurrentPlayer = gameState.getCurrentPlayerNumber() == playerNumber;
+    /**
+     * Muestra el fin del juego - DELEGA al Modelo para obtener información.
+     */
+    private void mostrarFinJuego() {
+        // Obtener resumen del Modelo
+        String[] lineas = gameState.obtenerResumenFinJuego();
 
-        view.displayGameState(gameState.getTable(), player, opponent,
-                            gameState.getDeckSize(), isCurrentPlayer);
+        // Mostrar en ambas vistas
+        for (String linea : lineas) {
+            view1.displayMessage(linea);
+            view2.displayMessage(linea);
+        }
     }
 
-    private PlayerView getView(int playerNumber) {
-        return playerNumber == 1 ? view1 : view2;
+    /**
+     * Actualiza ambas vistas.
+     */
+    private void actualizarAmbasVistas() {
+        actualizarVista(1);
+        actualizarVista(2);
+    }
+
+    /**
+     * Actualiza una vista específica.
+     */
+    private void actualizarVista(int numeroJugador) {
+        PlayerView vista = obtenerVista(numeroJugador);
+        escoba.model.Player jugador = (numeroJugador == 1) ? gameState.getPlayer1() : gameState.getPlayer2();
+        escoba.model.Player oponente = (numeroJugador == 1) ? gameState.getPlayer2() : gameState.getPlayer1();
+        boolean esTurnoActual = gameState.getCurrentPlayerNumber() == numeroJugador;
+
+        vista.displayGameState(gameState.getTable(), jugador, oponente,
+                              gameState.getDeckSize(), esTurnoActual);
+    }
+
+    /**
+     * Obtiene la vista para un número de jugador.
+     */
+    private PlayerView obtenerVista(int numeroJugador) {
+        return numeroJugador == 1 ? view1 : view2;
     }
 }
