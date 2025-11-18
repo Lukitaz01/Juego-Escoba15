@@ -2,7 +2,7 @@
 
 ## Diagrama de Clases Completo
 
-![UML Class Diagram](UML_Diagram.png)
+![UML Class Diagram](Escoba15-UML.png)
 
 ## Descripción del Diagrama
 

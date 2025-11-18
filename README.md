@@ -56,7 +56,7 @@ Al final del juego, se otorgan puntos por:
 
 <div align="center">
 
-![Diagrama UML - Escoba de 15](UML_Diagram.png)
+![Diagrama UML - Escoba de 15](Escoba15-UML.png)
 
 *Diagrama de clases completo mostrando la arquitectura MVC y el patrón Observer*
 
