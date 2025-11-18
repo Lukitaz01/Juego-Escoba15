@@ -4,7 +4,11 @@
       "WebSearch",
       "Bash(test:*)",
       "Bash(dir:*)",
-      "Bash(javac:*)"
+      "Bash(javac:*)",
+      "Bash(where:*)",
+      "Bash(curl:*)",
+      "Bash(java -jar plantuml.jar:*)",
+      "Bash(copy:*)"
     ],
     "deny": [],
     "ask": []

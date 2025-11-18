@@ -52,6 +52,18 @@ Al final del juego, se otorgan puntos por:
 | **Controlador** | `GameController` | Parseo de input, coordinación (barandilla) |
 | **Framework** | `Observable` | Patrón Observer reutilizable |
 
+### Diagrama UML del Sistema
+
+<div align="center">
+
+![Diagrama UML - Escoba de 15](UML_Diagram.png)
+
+*Diagrama de clases completo mostrando la arquitectura MVC y el patrón Observer*
+
+</div>
+
+**Ver detalles completos**: [UML_Diagram.md](UML_Diagram.md)
+
 ---
 
 ##  Comenzar
