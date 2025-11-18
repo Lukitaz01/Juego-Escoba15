@@ -68,7 +68,7 @@ Este proyecto demuestra **prácticas profesionales de ingeniería de software**:
 
 ### Compilación
 ```bash
-cd GameFramework
+cd EscobaDe15POO
 javac -d out src/framework/observer/*.java src/escoba/**/*.java
 ```
 
@@ -115,7 +115,7 @@ Resultado: As(1) + 5 de Espada(5) + 3 de Copa(3) = 9 ✗ ¡No suma 15!
 ## 📂 Estructura del Proyecto
 
 ```
-GameFramework/
+EscobaDe15POO/
 ├── src/
 │   ├── framework/
 │   │   └── observer/          # Framework patrón Observer reutilizable
