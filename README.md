@@ -296,8 +296,8 @@ Proyecto educativo de código abierto.
 
 ## 📞 Enlaces Rápidos
 
-- **Documentación Completa**: [DOCUMENTACION_PROYECTO.md](DOCUMENTACION_PROYECTO.md)
-- **Diagramas UML**: [DIAGRAMA_UML.md](DIAGRAMA_UML.md)
+- **Documentación Completa**: [DOCUMENTACION_PROYECTO.md](DOCUMENTACION.md)
+- **Diagramas UML**: [DIAGRAMA_UML.md](UML_Diagram.md)
 
 ---
 
