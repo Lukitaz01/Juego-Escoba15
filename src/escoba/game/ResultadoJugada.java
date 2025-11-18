@@ -3,11 +3,7 @@ package escoba.game;
 import escoba.model.Card;
 import java.util.List;
 
-/**
- * Resultado de una jugada (colocar carta o capturar).
- * Contiene toda la información necesaria para que el Controller
- * pueda mostrar mensajes sin tener lógica.
- */
+
 public class ResultadoJugada {
     private final boolean exito;
     private final String mensaje;

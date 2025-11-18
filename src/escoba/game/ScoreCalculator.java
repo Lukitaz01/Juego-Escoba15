@@ -6,14 +6,13 @@ import escoba.model.Player;
 import java.util.List;
 
 /**
- * Calculates scores for Escoba de 15.
- *
- * Scoring rules:
- * - 1 point per escoba (clearing the table)
- * - 1 point for most cards captured
- * - 1 point for most Oro (gold) cards
- * - 1 point for having 7 de Oro
- * - 1 point for most 7s
+ * Calcula las puntuaciones para Escoba de 15.
+ * Reglas de puntuación:
+ *  * - 1 punto por cada escoba (levantar todas las cartas)
+ *  * - 1 punto por la mayoría de las cartas capturadas
+ *  * - 1 punto por la mayoría de las cartas de Oro
+ *  * - 1 punto por tener el 7 de Oro
+ *  * - 1 punto por la mayoría de los 7
  */
 public class ScoreCalculator {
 

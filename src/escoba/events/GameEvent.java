@@ -1,9 +1,5 @@
 package escoba.events;
 
-/**
- * Enum representing different game events in Escoba de 15.
- * Used with the Observer pattern to notify views of game state changes.
- */
 public enum GameEvent {
     // Game flow events
     GAME_STARTED,           // Game has started/reset

@@ -273,6 +273,55 @@ public class GameState extends Observable {
     }
 
     /**
+     * Valida si el jugador dado puede realizar una jugada.
+     *
+     * @param numeroJugador El número de jugador que intenta jugar
+     * @return true si es el turno del jugador y el juego no ha terminado
+     */
+    public boolean puedeJugadorActuar(int numeroJugador) {
+        return !gameOver && numeroJugador == currentPlayerNumber;
+    }
+
+    /**
+     * Verifica si un comando es válido para el estado actual del juego.
+     *
+     * @param comando El comando a validar
+     * @return true si el comando es válido para el estado actual
+     */
+    public boolean esComandoValido(String comando) {
+        if (gameOver) {
+            return comando.equals("nueva") || comando.equals("new") ||
+                   comando.equals("salir") || comando.equals("quit") ||
+                   comando.equals("ayuda") || comando.equals("help");
+        } else {
+            return comando.equals("salir") || comando.equals("quit") ||
+                   comando.equals("ayuda") || comando.equals("help") ||
+                   comando.startsWith("jugar ") || comando.startsWith("play ");
+        }
+    }
+
+    /**
+     * Obtiene los comandos disponibles según el estado actual del juego.
+     *
+     * @return Array de descripciones de comandos disponibles
+     */
+    public String[] obtenerComandosDisponibles() {
+        if (gameOver) {
+            return new String[]{
+                "nueva / new    - Iniciar una nueva partida",
+                "salir / quit   - Salir del juego",
+                "ayuda / help   - Mostrar esta ayuda"
+            };
+        } else {
+            return new String[]{
+                "jugar <carta#> [llevar <mesa#> ...] - Jugar una carta",
+                "salir / quit                        - Salir del juego",
+                "ayuda / help                        - Mostrar esta ayuda"
+            };
+        }
+    }
+
+    /**
      * Obtiene el resumen del fin del juego con todos los puntajes.
      *
      * @return Array de Strings con las líneas del resumen

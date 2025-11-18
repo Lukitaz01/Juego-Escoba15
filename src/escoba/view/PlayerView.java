@@ -75,7 +75,7 @@ public class PlayerView implements IObserver {
         // Crear ventana principal
         frame = new JFrame(playerName + " - La Escoba de 15");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600, 500);  // Ancho: 600, Alto: 500
+        frame.setSize(600, 600);  // Ancho: 600, Alto: 500
         frame.setLocation(x, y);   // Posición en pantalla
         frame.setLayout(new BorderLayout());
 
