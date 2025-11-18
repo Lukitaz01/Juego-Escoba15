@@ -60,19 +60,6 @@ PlayerView (View) <--> GameController (Controller) <--> GameState (Model)
 - `PlayerView` observa `GameEvent`
 - `GameController` usa `ResultadoJugada`
 
-## Diagrama en Formato PlantUML
-
-El archivo completo del diagrama está disponible en `UML_Diagram.puml`
-
-Para generar la imagen PNG desde PlantUML:
-
-```bash
-# Si tienes PlantUML instalado
-java -jar plantuml.jar UML_Diagram.puml
-
-# O usando el servidor web de PlantUML
-# Copia el contenido de UML_Diagram.puml en: http://www.plantuml.com/plantuml/
-```
 
 ## Diagrama Simplificado (Mermaid)
 
@@ -211,60 +198,3 @@ classDiagram
     Main ..> GameState
     Main ..> PlayerView
 ```
-
-## Patrones de Diseño Implementados
-
-### 1. Observer Pattern
-**Propósito**: Sincronizar automáticamente las vistas cuando cambia el estado del juego
-
-**Implementación**:
-- `Observable` - Clase base para objetos observables
-- `IObserver` - Interfaz para observadores
-- `GameState extends Observable` - El modelo notifica cambios
-- `PlayerView implements IObserver` - Las vistas se actualizan automáticamente
-
-### 2. MVC (Model-View-Controller)
-**Propósito**: Separar responsabilidades
-
-**Implementación**:
-- **Model**: `GameState`, `Card`, `Deck`, `Player`, `ScoreCalculator`
-- **View**: `PlayerView`
-- **Controller**: `GameController` (actúa como "barandilla", sin lógica de negocio)
-
-### 3. Result Object Pattern
-**Propósito**: Encapsular resultados de operaciones
-
-**Implementación**:
-- `ResultadoJugada` - Encapsula éxito, mensaje, y flags especiales
-
-## Notas de Arquitectura
-
-1. **GameController como Barandilla**
-   - No contiene lógica de negocio
-   - Solo parsea input y coordina
-   - Toda la lógica está en GameState
-
-2. **GameState es el Cerebro**
-   - Valida todas las jugadas
-   - Genera todos los mensajes
-   - Maneja las reglas del juego
-   - Notifica eventos a las vistas
-
-3. **Observer Pattern para Sincronización**
-   - Las vistas se actualizan automáticamente
-   - Sin acoplamiento directo entre modelo y vista
-   - Fácil agregar nuevos observadores (IA, estadísticas, etc.)
-
-4. **Separación Limpia**
-   - Modelo no conoce la vista
-   - Vista no conoce el modelo directamente
-   - Controller actúa como intermediario
-
-## Extensibilidad
-
-El diseño permite fácilmente agregar:
-- **Jugador IA**: Crear `AIPlayerView implements IObserver`
-- **Estadísticas**: Crear `StatsObserver implements IObserver`
-- **Red**: Crear `NetworkPlayerView implements IObserver`
-- **Replay**: Grabar eventos y reproducir
-- **Sonido**: Crear `SoundObserver implements IObserver`
