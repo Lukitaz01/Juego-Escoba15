@@ -87,12 +87,12 @@ public class PlayerView implements IObserver {
 
         if (playerNumber == 1) {
             // Soft blue theme for Player 1
-            backgroundColor = new Color(15, 25, 45);      // Dark blue background
-            foregroundColor = new Color(173, 216, 230);   // Light blue text
+            backgroundColor = new Color(15, 25, 45);      // fondo oscuro azul
+            foregroundColor = new Color(173, 216, 230);   // texto celeste claro
         } else {
             // Soft green theme for Player 2
-            backgroundColor = new Color(15, 35, 25);      // Dark green background
-            foregroundColor = new Color(144, 238, 144);   // Light green text
+            backgroundColor = new Color(15, 35, 25);      // fondo oscuro verde
+            foregroundColor = new Color(144, 238, 144);   // texto verde claro
         }
 
         // Área de texto para mostrar el juego

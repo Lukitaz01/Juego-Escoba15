@@ -1,8 +1,8 @@
 # La Escoba de 15 🎴
 
-> Implementación profesional del juego de cartas tradicional español en Java con arquitectura MVC y patrón Observer.
+> Implementación del juego de cartas tradicional español en Java con arquitectura MVC y patrón Observer.
 
-## 🎮 Sobre el Juego
+## Sobre el Juego
 
 **La Escoba de 15** es un juego de cartas tradicional español para 2 jugadores donde el objetivo es capturar cartas de la mesa que sumen exactamente 15 puntos usando las cartas de tu mano.
 
@@ -19,22 +19,18 @@
 ### Sistema de Puntuación
 
 Al final del juego, se otorgan puntos por:
-- 🎯 **1 punto** por cada Escoba (limpiar la mesa)
-- 📊 **1 punto** por más cartas capturadas
-- 🟡 **1 punto** por más cartas de "Oro"
-- 💎 **1 punto** por tener el 7 de Oro
-- 7️⃣ **1 punto** por más 7s capturados
+-  **1 punto** por cada Escoba (limpiar la mesa)
+-  **1 punto** por más cartas capturadas
+-  **1 punto** por más cartas de "Oro"
+-  **1 punto** por tener el 7 de Oro
+-  **1 punto** por más 7s capturados
 
 ---
 
-## 🏗️ Arquitectura
-
-Este proyecto demuestra **prácticas profesionales de ingeniería de software**:
-
 ### Patrones de Diseño
-- ✅ **MVC (Modelo-Vista-Controlador)**: Separación limpia de responsabilidades
-- ✅ **Patrón Observer**: Sincronización de vistas en tiempo real
-- ✅ **Result Object**: Encapsulación de resultados
+-  **MVC (Modelo-Vista-Controlador)**: Separación limpia de responsabilidades
+-  **Patrón Observer**: Sincronización de vistas en tiempo real
+-  **Result Object**: Encapsulación de resultados
 
 ### Aspectos Destacados de Arquitectura
 ```
@@ -56,11 +52,9 @@ Este proyecto demuestra **prácticas profesionales de ingeniería de software**:
 | **Controlador** | `GameController` | Parseo de input, coordinación (barandilla) |
 | **Framework** | `Observable` | Patrón Observer reutilizable |
 
-**IMPORTANTE**: El Controller es solo una "barandilla" - NO contiene lógica de negocio. Toda la lógica está en el Modelo.
-
 ---
 
-## 🚀 Comenzar
+##  Comenzar
 
 ### Prerequisitos
 - Java JDK 8 o superior
@@ -79,7 +73,7 @@ java -cp out escoba.Main
 
 ---
 
-## 🎯 Cómo Jugar
+##  Cómo Jugar
 
 ### Comandos del Juego
 
@@ -112,7 +106,7 @@ Resultado: As(1) + 5 de Espada(5) + 3 de Copa(3) = 9 ✗ ¡No suma 15!
 
 ---
 
-## 📂 Estructura del Proyecto
+##  Estructura del Proyecto
 
 ```
 EscobaDe15POO/
@@ -148,27 +142,27 @@ EscobaDe15POO/
 
 ---
 
-## 🎨 Características
+##  Características
 
 ### Experiencia de Usuario
-- ✅ **Vistas codificadas por colores**: Jugador 1 (Azul Suave), Jugador 2 (Verde Suave)
-- ✅ **Sincronización en tiempo real**: Ambos jugadores ven actualizaciones instantáneamente
-- ✅ **Ayuda completa**: Instrucciones en el juego en español
-- ✅ **Mensajes de error claros**: Feedback útil de validación
-- ✅ **Comandos bilingües**: Soporte de español e inglés
+-  **Vistas codificadas por colores**: Jugador 1 (Azul Suave), Jugador 2 (Verde Suave)
+-  **Sincronización en tiempo real**: Ambos jugadores ven actualizaciones instantáneamente
+-  **Ayuda completa**: Instrucciones en el juego en español
+-  **Mensajes de error claros**: Feedback útil de validación
+-  **Comandos bilingües**: Soporte de español e inglés
 
 ### Características Técnicas
-- ✅ **Arquitectura MVC limpia**: Separación apropiada de responsabilidades
-- ✅ **Patrón Observer**: Actualizaciones automáticas de vistas
-- ✅ **Framework reutilizable**: Componentes Observer funcionan en cualquier proyecto
-- ✅ **Bien documentado**: Comentarios JavaDoc completos
-- ✅ **Principios SOLID**: Organización de código profesional
-- ✅ **Diseño extensible**: Fácil agregar características
-- ✅ **Controller como barandilla**: Sin lógica de negocio en el Controller
+-  **Arquitectura MVC limpia**: Separación apropiada de responsabilidades
+-  **Patrón Observer**: Actualizaciones automáticas de vistas
+-  **Framework reutilizable**: Componentes Observer funcionan en cualquier proyecto
+-  **Bien documentado**: Comentarios JavaDoc completos
+-  **Principios SOLID**: Organización de código profesional
+-  **Diseño extensible**: Fácil agregar características
+-  **Controller como barandilla**: Sin lógica de negocio en el Controller
 
 ---
 
-## 📚 Documentación
+##  Documentación
 
 Documentación completa disponible:
 
@@ -176,34 +170,10 @@ Documentación completa disponible:
 |-----------|-------------|
 | [**DOCUMENTACION_PROYECTO.md**](DOCUMENTACION_PROYECTO.md) | Documentación técnica completa, arquitectura, y cómo funciona el código |
 | [**DIAGRAMA_UML.md**](DIAGRAMA_UML.md) | Todos los diagramas UML (clases, secuencia, componentes, etc.) |
-| [**RESUMEN_REFACTORIZACION.md**](RESUMEN_REFACTORIZACION.md) | Detalles de la refactorización MVC |
 
 ---
 
-## 💪 Fortalezas del Proyecto
-
-### Excelencia Arquitectónica
-1. **Separación MVC Limpia**: Modelo, Vista y Controller tienen responsabilidades claras
-2. **Patrón Observer**: Acoplamiento débil entre componentes
-3. **Framework Reutilizable**: Componentes Observer pueden usarse en otros proyectos
-4. **Diseño Extensible**: Fácil agregar IA, juego en red, estadísticas, etc.
-5. **Controller Mínimo**: Es solo una "barandilla" - no contiene lógica
-
-### Calidad del Código
-1. **Principios SOLID**: Los cinco principios demostrados
-2. **Código Limpio**: Nombres significativos, métodos pequeños, estructura clara
-3. **Sin Duplicación**: Principio DRY seguido
-4. **Bien Documentado**: Comentarios completos y documentación externa
-
-### Prácticas Profesionales
-1. **Patrones de Diseño**: MVC, Observer y Result Object apropiadamente implementados
-2. **Testeable**: Lógica de negocio independiente de UI
-3. **Mantenible**: Estructura clara, fácil de modificar
-4. **Listo para Producción**: Implementación de grado profesional
-
----
-
-## 🔧 Personalización
+##  Personalización
 
 ### Cambiar Colores
 Editar `PlayerView.java` líneas 88-96:
@@ -230,7 +200,7 @@ if (input.equals("tuComando")) {
 
 ---
 
-## 🚀 Extensibilidad
+##  Extensibilidad
 
 Esta arquitectura hace fácil agregar:
 
@@ -259,7 +229,7 @@ gameState.addObserver(aiPlayer);
 
 ---
 
-## 🎓 Resultados de Aprendizaje
+##  Resultados de Aprendizaje
 
 Este proyecto demuestra:
 
@@ -282,7 +252,7 @@ Este proyecto demuestra:
 
 ---
 
-## 📊 Detalles Técnicos
+##  Detalles Técnicos
 
 ```
 Lenguaje: Java 8+
@@ -296,7 +266,7 @@ Documentación: Completa en Español
 
 ---
 
-## 🤝 Contribuir
+##  Contribuir
 
 Este es un proyecto educativo. Siéntete libre de:
 - Hacer fork y modificar
@@ -306,25 +276,9 @@ Este es un proyecto educativo. Siéntete libre de:
 
 ---
 
-## 📄 Licencia
+##  Licencia
 
 Proyecto educativo de código abierto.
-
----
-
-## 🏆 Listo para Presentación
-
-Este proyecto está **listo para portfolio y presentación**, demostrando:
-- Arquitectura de calidad de producción
-- Prácticas de codificación profesional
-- Documentación completa
-- Diseño extensible y mantenible
-
-Perfecto para:
-- Presentaciones académicas
-- Entrevistas de trabajo
-- Showcases de portfolio
-- Aprender patrones de diseño
 
 ---
 
@@ -332,11 +286,10 @@ Perfecto para:
 
 - **Documentación Completa**: [DOCUMENTACION_PROYECTO.md](DOCUMENTACION_PROYECTO.md)
 - **Diagramas UML**: [DIAGRAMA_UML.md](DIAGRAMA_UML.md)
-- **Resumen de Refactorización**: [RESUMEN_REFACTORIZACION.md](RESUMEN_REFACTORIZACION.md)
 
 ---
 
-## 🎯 Resumen de Inicio Rápido
+##  Resumen de Inicio Rápido
 
 1. **Compilar**: `javac -d out src/framework/observer/*.java src/escoba/**/*.java`
 2. **Ejecutar**: `java -cp out escoba.Main`
@@ -348,11 +301,5 @@ Perfecto para:
 <div align="center">
 
 **¡Disfruta jugando a La Escoba de 15!** 🎴
-
-*Ingeniería de software profesional aplicada a juegos de cartas tradicionales*
-
----
-
-**Arquitectura MVC ✓ Patrón Observer ✓ Código Limpio ✓ 100% Español ✓**
 
 </div>
