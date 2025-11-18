@@ -180,8 +180,8 @@ Documentación completa disponible:
 
 | Documento | Descripción |
 |-----------|-------------|
-| [**DOCUMENTACION_PROYECTO.md**](DOCUMENTACION_PROYECTO.md) | Documentación técnica completa, arquitectura, y cómo funciona el código |
-| [**DIAGRAMA_UML.md**](DIAGRAMA_UML.md) | Todos los diagramas UML (clases, secuencia, componentes, etc.) |
+| [**DOCUMENTACION_PROYECTO.md**](DOCUMENTACION.md) | Documentación técnica completa, arquitectura, y cómo funciona el código |
+| [**DIAGRAMA_UML.md**](UML_Diagram.md) | Todos los diagramas UML (clases, secuencia, componentes, etc.) |
 
 ---
 
